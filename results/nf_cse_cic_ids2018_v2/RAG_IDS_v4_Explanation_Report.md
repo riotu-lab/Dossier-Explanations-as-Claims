@@ -1,4 +1,4 @@
-# RAG-IDS v4 — Analysis Report
+# Dossier — Analysis Report
 **Generated:** 2026-06-23 17:08:47  |  **Mode:** INDUCTIVE  |  **LLM:** llama3.2:3b
 
 ## 1. GNN Detection Performance (Test Set)

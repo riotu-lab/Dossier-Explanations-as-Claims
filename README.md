@@ -1,7 +1,7 @@
 # DOSSIER: Subgraph-Indexed Retrieval and Grounding Verification for Explainable Intrusion Detection
 
 Code and reported results for the article **"Explanations as Claims: Subgraph-Indexed Retrieval and
-Grounding Verification for Explainable Intrusion Detection"** (submitted to AI, MDPI).
+Grounding Verification for Explainable Intrusion Detection"** (under review).
 
 ## Overview
 
@@ -247,7 +247,7 @@ explanations; `hall_all`: over all LLM calls with parse failures scored 1.0.
   author  = {Driss, Maha and Saidam, Wahaj and Ben Atitallah, Safa and Boulila, Wadii},
   journal = {****},
   year    = {2026},
-  note    = {Submitted}
+  note    = {under review}
 }
 ```
 

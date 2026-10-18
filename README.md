@@ -39,36 +39,16 @@ the audit or cannot be parsed are withheld and escalated to an analyst, as are l
    checks (H1 feature grounding, H2 numeric faithfulness, H3 precedent-label consistency). Text-quality
    metrics (ROUGE-L, BERTScore-F1, Self-BLEU, length) are reported but not used for gating.
 
-## Repository structure
+## Repository layout
 
-```
-DOSSIER/
-├── README.md
-├── CITATION.cff
-├── requirements.txt
-├── .gitignore
-├── notebooks/                              # full pipeline, one notebook per dataset (saved outputs = reported runs)
-│   ├── dossier_nf_ton_iot_v2.ipynb
-│   ├── dossier_nf_ton_iot_v3.ipynb
-│   └── dossier_nf_cse_cic_ids2018_v2.ipynb
-├── ablations/                              # ablation studies (saved outputs = reported runs)
-│   ├── ablation_nf_ton_iot_v2.ipynb        # Table 10, Table 17 (v2 row)
-│   ├── ablation_nf_ton_iot_v3.ipynb        # Tables 9 and 10, Table 17 (v3 row), Figure 10
-│   └── ablation_nf_cse_cic_ids2018_v2.ipynb  # Table 10, Table 17 (CSE row)
-├── results/                                # artifacts written by the reported main runs
-│   ├── README.md
-│   ├── nf_ton_iot_v2/
-│   ├── nf_ton_iot_v3/
-│   └── nf_cse_cic_ids2018_v2/
-├── figures/
-│   ├── dossier_framework.png / .pdf        # paper Figure 1
-│   └── dossier_framework.pptx              # editable source
-└── data/
-    └── README.md                           # dataset files expected by the notebooks
-```
+| File | Dataset | Content |
+|---|---|---|
+| `dossier_nf_ton_iot_v2.ipynb` | NF-ToN-IoT-v2 | full pipeline + ablation (two executions) |
+| `dossier_nf_ton_iot_v3.ipynb` | NF-ToN-IoT-v3 | full pipeline + ablation + temporal-feature audit |
+| `dossier_nf_cse_cic_ids2018_v2.ipynb` | NF-CSE-CIC-IDS2018-v2 | full pipeline + ablation |
+| `requirements.txt` | — | pinned Python dependencies |
 
-Each notebook is self-contained; the code is kept in notebook form exactly as it produced the reported
-results.
+The three notebooks share the same code; only the dataset-specific cells (loading, feature list, class names) differ. **The stored cell outputs are the evidence for the paper's tables and figures**.
 
 ## Installation
 
@@ -105,14 +85,10 @@ data/NF-ToN-IoT-v3_targetCounts.csv
 data/CSE_v2_targetCounts.csv
 ```
 
-or point `DOSSIER_DATA_DIR` to another directory. `data/README.md` lists the expected row counts,
-columns, class distribution (paper Table 3), the links to the original University of Queensland
-releases, and the SHA-256 checksums of the files used to prepare this repository.
-
 ## Running the main experiments
 
 Run a notebook from inside `notebooks/` (relative paths assume this working directory). Executing a
-notebook overwrites its saved outputs, so write to a new file to keep the reported outputs intact:
+notebook overwrites its saved outputs:
 
 ```bash
 cd notebooks
@@ -126,28 +102,6 @@ computes attribution faithfulness, runs the audited LLM explanation stage on up 
 class, and retrains five seeds for robustness. Measured wall-clock times on the reference GPU were
 4 h 18 min (v2), 4 h 32 min (v3) and 11 h 42 min (CSE), dominated by the five-seed evaluation (Table 18).
 
-## Running the ablation studies
-
-Run the main notebook for the same dataset first, then:
-
-```bash
-cd ablations
-jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=-1 \
-    ablation_nf_ton_iot_v3.ipynb --output ablation_nf_ton_iot_v3_rerun.ipynb
-```
-
-An ablation notebook re-runs the shared pipeline and **loads** `outputs/<dataset>/rag_ids_v4_seed42.pt`
-when present (otherwise it trains one), then runs:
-
-- **Table 10** (all datasets): full model, w/o gated reconstruction, w/o jumping-knowledge,
-  re-implemented E-GraphSAGE (seed 42, identical splits).
-- **Table 17** (all datasets): faithfulness summary, including the share of flows with a deletion drop
-  below 0.05.
-- **Table 9** (NF-ToN-IoT-v3 only): temporal-attribution audit with all 51 features, and retraining with
-  the two absolute timestamp columns removed (49 features).
-
-Printed labels in the saved ablation outputs follow an earlier draft of the manuscript:
-printed "Table 8" = paper Table 9, "Table 9" = Table 10, "Table 16" = Table 17.
 
 ## Main results reported in the paper
 
@@ -200,16 +154,6 @@ explanations; `hall_all`: over all LLM calls with parse failures scored 1.0.
 | NF-ToN-IoT-v2 | 0.3898 | 0.3430 | 0.2953 | 25.00% |
 | NF-ToN-IoT-v3 | 0.4071 | 0.2454 | 0.3320 | 42.00% |
 | NF-CSE-CIC-IDS2018-v2 | 0.3014 | 0.2788 | 0.2233 | 20.00% |
-
-### Where each result comes from
-
-| Paper item | Source |
-|---|---|
-| Tables 5, 11, 12; Tables 6–8 (per-class, seed 42); Tables 13–15; Table 18 | `notebooks/` (one per dataset) |
-| Table 9 | `ablations/ablation_nf_ton_iot_v3.ipynb` (v2 reference row from `notebooks/dossier_nf_ton_iot_v2.ipynb`) |
-| Table 10 | `ablations/` (one per dataset) |
-| Table 17 | v2 and CSE rows: main and ablation notebooks (identical); v3 row: `ablations/ablation_nf_ton_iot_v3.ipynb` |
-| Figures 3–9 (underlying data) | `notebooks/` and `results/`; Figure 10: `ablations/ablation_nf_ton_iot_v3.ipynb` |
 
 ## Reproducibility notes
 
